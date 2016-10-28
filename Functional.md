@@ -68,9 +68,6 @@ Feel free to go through these at your own pace.
 
 To get the koans all setup and running visit the official koans page: http://clojurekoans.com/
 
-It should give you a failed message, as you fix each broken assertion and save it should walk to
-the next problem.
-
 ## Common functions
 
 ### Math
