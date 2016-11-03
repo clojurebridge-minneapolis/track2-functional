@@ -24,6 +24,24 @@
   (is (= 2 (safe-inc 1))))
 
 
+(defn conversation-consistent?
+  [conv]
+  (let [limit    (get conv :limit 0)
+        messages (get conv :messages)
+        total    (get conv :total 0)
+        counts   (get conv :counts)]
+    (and
+      (is (>= limit (count messages))
+          "Conversation must not contain more messages than the limit.")
+
+      (is (>= total (count messages))
+          (str "Current number of messages must not be larger than the "
+               "total number of messages."))
+
+      (is (= total (reduce + (vals counts)))
+          "The total should be equal to the sum of the counts.")
+      )))
+
 
 (defn simulate-conversation
   "This function will simulate a number of participants
@@ -67,16 +85,12 @@ Arguments:
                (format "Total Message Count must match iteration count: %s %s"
                        'constructor 'add-message))
 
-           (is (= messages (reduce + (vals (:counts conversation))))
-               (format "Sum of user message counts must match iteration count: %s %s"
-                       'constructor 'add-message))
-
            (is (= message-limit (:limit conversation) )
                (format "Conversation's limit must match expected message limit: %s %s"
                        'constructor 'add-message))
 
-           (is (= message-limit (count (:messages conversation)))
-               (format "Number of messages must equal the message limit: %s %s"
+           (is (conversation-consistent? conversation)
+               (format "Conversation must be internally consistent: %s %s"
                        'constructor 'add-message)))
 
          ;;  This will likely throw exceptions and not work at all
@@ -202,9 +216,9 @@ Returns the HTML response converted back into conversation data."
           (take message-count (cycle messages))))
   (read-messages url))
 
-#_(chat-bot "http://localhost:3000/"
-           50
-           ["Thing One" "Thing Two"]
-           ["They can"
-            "Find Anything Anything Anything"
-            "Under the sun"])
+(chat-bot "http://localhost:3000/"
+          50
+          ["Thing One" "Thing Two"]
+          ["They can"
+           "Find Anything Anything Anything"
+           "Under the sun"])
